@@ -13,6 +13,8 @@ allCommands = ['help', 'hunt', 'shop', 'heal', 'boss', 'stats', 'quit', 'bank', 
 maxHealth = playerStats['health'] * playerStats['level'] 
 level = playerStats['level']
 xpBonus = playerStats['bank'] * level
+bank = playerStats['bank']
+purse = playerStats['level']
 
 
 
@@ -56,6 +58,7 @@ def heal():
         if coins >= price:
             playerStats['health'] = maxHealth
             print("Restored to full health!")
+            playerStats['coins'] -= price
     
         
 
@@ -83,44 +86,38 @@ def bank():
     
     
 def deposit():
-    bank = playerStats['bank']
-    purse = playerStats['coins']
-    amount = int(input('Enter the amount you would like to deposit: '))
+    amount = input('Enter the amount you would like to deposit: ')
     
-    if purse <= 0:
-        print("""You don't have any coins to deposit!""")
-        
-    elif amount >= purse:
-        print(f"""That's too much to deposit! The max you can deposit is {purse}.""")
+    if amount == 'all':
+        playerStats['bank'] += playerStats['coins']
+        playerStats['coins'] -= playerStats['coins']
+        print("""Successfully deposited all coins!""")
         
     else:
-        
-        if amount == -1:
-            playerStats['bank'] += playerStats['coins']
-            playerStats['coins'] -= playerStats['coins']
-            
+        amount = int(amount)
+        if playerStats['coins'] < amount:
+            print("""Cannot deposit that much; you don't have enough in your purse!""")
         else:
             playerStats['coins'] -= amount
             playerStats['bank'] += amount
-                    
+            print(f"""Successfully deposited {amount} coins.""")
+ 
+    
 def withdraw():
-    bank = playerStats['bank']
-    purse = playerStats['coins']
-    withdrawAmount = int(input('Enter the amount to withdraw: '))
+    withdrawAmount = input('Enter the amount you would like to withdraw:')
     
-    if bank == 0:
-        print(f"""Can't withdraw, there's nothing there!""")
-        
-    elif 
-        
-    
-    
-        
-        
-        
-    
-    
-    
+    if withdrawAmount == 'all':
+        playerStats['coins'] += playerStats['bank']
+        playerStats['bank'] -= playerStats['bank']
+        print("""Successfully withdrew all coins!""")
+    else:
+        withdrawAmount = int(withdrawAmount)
+        if playerStats['bank'] < withdrawAmount:
+            print("""That's too much to withdraw!""")
+        else:
+            playerStats['bank'] -= withdrawAmount
+            playerStats['coins'] += withdrawAmount
+            print(f"""Successfully withdrew {withdrawAmount} coins!""")
 
 #define kill 
 
@@ -300,3 +297,7 @@ while True:
             
         if command == commands[3]:
           heal()
+          
+        if command == bankCommands[1]:
+            withdraw()
+                  
