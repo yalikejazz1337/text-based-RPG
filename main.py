@@ -1,6 +1,4 @@
 #import required libraries
-#joe mama
-import numpy as np
 from numpy import random
 
 #define variables
@@ -163,17 +161,18 @@ def killSpider():
     spider.health = spider.maxHealth
 
 
+#level system
 #hunt function
 
 
 def hunt():
-    enemyHunted = random.randint(1, 4)
+    enemyHunted 
 
     if enemyHunted == 1:
 
         enemyHunted = zombie
-        damageTaken = random.randint(enemyHunted.attack,
-                                     5 * enemyHunted.attack)
+        damageTaken = random.randint(enemyHunted.attack, 5 * enemyHunted.attack)
+        damageTaken = damageTaken / playerStats['defence']
         damage = random.randint(playerStats['attack'], 25)
         enemyHunted.health -= damage
         playerStats['health'] -= damageTaken
@@ -287,11 +286,15 @@ def stats():
 
 class enemyClass:
     def __init__(self, name, attack, defence, health, maxHealth):
-        self.name = name
-        self.attack = attack
-        self.defence = defence
-        self.health = health
-        self.maxHealth = maxHealth
+      self.name = name
+      self.attack = attack
+      self.defence = defence
+      self.health = health
+      self.maxHealth = maxHealth
+    
+    def killed():
+      self.health = self.maxHealth
+      
 
 
 #enemies
