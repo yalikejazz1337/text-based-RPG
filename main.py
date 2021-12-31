@@ -1,22 +1,35 @@
 #import required libraries
+#joe mama
 import numpy as np
 from numpy import random
 
 #define variables
-playerStats = {'health': 100, 'defence': 10, 'attack': 10, 'coins': 100, 'level': 1, 'exp': 100, 'bank': 1}
+playerStats = {
+    'health': 100,
+    'defence': 10,
+    'attack': 10,
+    'coins': 100,
+    'level': 1,
+    'exp': 100,
+    'bank': 1
+}
 
 commands = ['help', 'hunt', 'shop', 'heal', 'boss', 'stats', 'quit', 'bank']
 bankCommands = ['deposit', 'withdraw']
 
-allCommands = ['help', 'hunt', 'shop', 'heal', 'boss', 'stats', 'quit', 'bank', 'deposit', 'withdraw']
+allCommands = [
+    'help', 'hunt', 'shop', 'heal', 'boss', 'stats', 'quit', 'bank', 'deposit',
+    'withdraw'
+]
 
-maxHealth = playerStats['health'] * playerStats['level'] 
+maxHealth = playerStats['health'] * playerStats['level']
 level = playerStats['level']
 xpBonus = playerStats['bank'] * level
 bank = playerStats['bank']
 purse = playerStats['level']
 
 #boss class
+
 
 class bossClass:
     def __init__(self, name, attack, defence, health, maxHealth):
@@ -26,12 +39,10 @@ class bossClass:
         self.health = health
         self.maxHealth = maxHealth
 
+
 #bossClass
 
 boss1 = bossClass('The Sus', 100, 100, 100, 100)
-
-
-
 
 #help list
 helpCommand = """
@@ -56,33 +67,33 @@ helpCommand = """
                Exit: Exits the game.
                """
 
-
-
-
 #healing
+
 
 def heal():
     coins = playerStats['coins']
     price = 25
     bank = playerStats['bank']
     if coins < price and bank > price:
-        print(f"""You only have {coins} in your purse. Withdraw some from your bank to buy this item.""")
+        print(
+            f"""You only have {coins} in your purse. Withdraw some from your bank to buy this item."""
+        )
     elif coins < price and bank < price:
-        print(f"""You don't have enough money to buy this. You have {coins}, but you need {price}.""")
+        print(
+            f"""You don't have enough money to buy this. You have {coins}, but you need {price}."""
+        )
     else:
         if coins >= price:
             playerStats['health'] = maxHealth
             print("Restored to full health!")
             playerStats['coins'] -= price
-    
-        
+
 
 #banking
 def bank():
     coins = playerStats['coins']
     inBank = playerStats['bank']
 
-    
     print(f"""
           --------------------------
                   YOUR BANK
@@ -98,29 +109,31 @@ def bank():
           all coins in purse or withdraw all coins from bank.
           --------------------------
           """)
-    
-    
+
+
 def deposit():
     amount = input('Enter the amount you would like to deposit: ')
-    
+
     if amount == 'all':
         playerStats['bank'] += playerStats['coins']
         playerStats['coins'] -= playerStats['coins']
         print("""Successfully deposited all coins!""")
-        
+
     else:
         amount = int(amount)
         if playerStats['coins'] < amount:
-            print("""Cannot deposit that much; you don't have enough in your purse!""")
+            print(
+                """Cannot deposit that much; you don't have enough in your purse!"""
+            )
         else:
             playerStats['coins'] -= amount
             playerStats['bank'] += amount
             print(f"""Successfully deposited {amount} coins.""")
- 
-    
+
+
 def withdraw():
     withdrawAmount = input('Enter the amount you would like to withdraw:')
-    
+
     if withdrawAmount == 'all':
         playerStats['coins'] += playerStats['bank']
         playerStats['bank'] -= playerStats['bank']
@@ -134,99 +147,108 @@ def withdraw():
             playerStats['coins'] += withdrawAmount
             print(f"""Successfully withdrew {withdrawAmount} coins!""")
 
-#define kill 
+
+#define kill
+
 
 def killZombie():
     zombie.health = zombie.maxHealth
-    
+
+
 def killSkeleton():
     skeleton.health = skeleton.maxHealth
-    
+
+
 def killSpider():
     spider.health = spider.maxHealth
-    
+
+
 #hunt function
 
+
 def hunt():
-    enemyHunted = random.randint(1,4)
-   
+    enemyHunted = random.randint(1, 4)
+
     if enemyHunted == 1:
-        
+
         enemyHunted = zombie
-        damageTaken = random.randint(enemyHunted.attack, 5 * enemyHunted.attack)
+        damageTaken = random.randint(enemyHunted.attack,
+                                     5 * enemyHunted.attack)
         damage = random.randint(playerStats['attack'], 25)
-        enemyHunted.health -= damage 
+        enemyHunted.health -= damage
         playerStats['health'] -= damageTaken
-        coinsEarned = random.randint(25,100)
-        xpEarned = random.randint(100 * xpBonus,500 * xpBonus)
-        
-            
+        coinsEarned = random.randint(25, 100)
+        xpEarned = random.randint(100 * xpBonus, 500 * xpBonus)
+
         if playerStats['health'] <= 0:
             die()
-            
+
         elif enemyHunted.health <= 0:
-                playerStats['coins'] += coinsEarned
-                playerStats['exp'] += xpEarned
-                print(f"""You killed a zombie and earned {coinsEarned} coins. You also earned {xpEarned} XP.""")
-                killZombie()
-            
+            playerStats['coins'] += coinsEarned
+            playerStats['exp'] += xpEarned
+            print(
+                f"""You killed a zombie and earned {coinsEarned} coins. You also earned {xpEarned} XP."""
+            )
+            killZombie()
+
         else:
             print("""You weren't able to defeat the zombie and ran away.""")
-            
-        
-        
+
     if enemyHunted == 2:
         enemyHunted = skeleton
-        damageTaken = random.randint(enemyHunted.attack, 5 * enemyHunted.attack)
+        damageTaken = random.randint(enemyHunted.attack,
+                                     5 * enemyHunted.attack)
         damage = random.randint(playerStats['attack'], 25)
-        enemyHunted.health -= damage 
+        enemyHunted.health -= damage
         playerStats['health'] -= damageTaken
-        coinsEarned = random.randint(25,100)
-        xpEarned = random.randint(100,500)
-        
-            
+        coinsEarned = random.randint(25, 100)
+        xpEarned = random.randint(100, 500)
+
         if playerStats['health'] <= 0:
             die()
-            
+
         elif enemyHunted.health <= 0:
-                playerStats['coins'] += coinsEarned
-                playerStats['exp'] += xpEarned
-                print(f"""You killed a skeleton and earned {coinsEarned} coins. You also earned {xpEarned} XP""")
-                killSkeleton()
-            
+            playerStats['coins'] += coinsEarned
+            playerStats['exp'] += xpEarned
+            print(
+                f"""You killed a skeleton and earned {coinsEarned} coins. You also earned {xpEarned} XP"""
+            )
+            killSkeleton()
+
         else:
             print("""You weren't able to defeat the skeleton and ran away.""")
-            
-   
+
     if enemyHunted == 3:
         enemyHunted = spider
-        damageTaken = random.randint(enemyHunted.attack, 5 * enemyHunted.attack)
+        damageTaken = random.randint(enemyHunted.attack,
+                                     5 * enemyHunted.attack)
         damage = random.randint(playerStats['attack'], 25)
-        enemyHunted.health -= damage 
+        enemyHunted.health -= damage
         playerStats['health'] -= damageTaken
-        coinsEarned = random.randint(25,100)
-        xpEarned = random.randint(100,500)
-        
-            
+        coinsEarned = random.randint(25, 100)
+        xpEarned = random.randint(100, 500)
+
         if playerStats['health'] <= 0:
             die()
-            
+
         elif enemyHunted.health <= 0:
-                playerStats['coins'] += coinsEarned
-                playerStats['exp'] += xpEarned
-                print(f"""You killed a spider and earned {coinsEarned} coins. You also earned {xpEarned} XP""")
-                killSpider()
-            
+            playerStats['coins'] += coinsEarned
+            playerStats['exp'] += xpEarned
+            print(
+                f"""You killed a spider and earned {coinsEarned} coins. You also earned {xpEarned} XP"""
+            )
+            killSpider()
+
         else:
             print("""You weren't able to defeat the spider and ran away.""")
-            
-        
+
 
 #death
 
+
 def die():
     xpLost = random.randint(100 * level, 500 * level)
-    coinsLost = random.randint(10,50)
+    coinsLost = random.randint(10, 50)
     print(f'You died and lost {coinsLost} coins. You also lost {xpLost} XP. ')
     playerStats['health'] = 100 * playerStats['level']
     playerStats['exp'] -= xpLost
@@ -234,6 +256,7 @@ def die():
 
 
 #stats
+
 
 def stats():
     health = playerStats['health']
@@ -243,7 +266,7 @@ def stats():
     level = playerStats['level']
     xp = playerStats['exp']
     bank = playerStats['bank']
-    
+
     print(f"""
           -----------------------------------------
                       PLAYER STATISTICS
@@ -258,7 +281,9 @@ def stats():
           -----------------------------------------
           """)
 
+
 #enemy class
+
 
 class enemyClass:
     def __init__(self, name, attack, defence, health, maxHealth):
@@ -267,6 +292,7 @@ class enemyClass:
         self.defence = defence
         self.health = health
         self.maxHealth = maxHealth
+
 
 #enemies
 
@@ -277,42 +303,41 @@ spider = enemyClass('Spider', 10, 15, 10, 10)
 #game loop
 
 while True:
-    
+
     command = input("""Enter a command. Enter 'Help' for list of commands: """)
-        
+
     if command not in allCommands:
         print("""
               ------------------------------------------------------------
               Woah there. That command doesn't exist. Try 'help' for help.
               ------------------------------------------------------------
               """)
-    
+
     if command in commands or bankCommands:
         if command == commands[-2]:
             print('Quitting.....')
             break
-        
+
         if playerStats['health'] <= 0:
             die()
-        
+
         if command == commands[0]:
             print(helpCommand)
-            
+
         if command == commands[1]:
             hunt()
-            
+
         if command == commands[-3]:
             stats()
-            
+
         if command == commands[-1]:
             bank()
-        
+
         if command == bankCommands[0]:
             deposit()
-            
+
         if command == commands[3]:
-          heal()
-          
+            heal()
+
         if command == bankCommands[1]:
             withdraw()
-                  
