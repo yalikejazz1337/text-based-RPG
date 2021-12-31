@@ -166,7 +166,7 @@ def killSpider():
 
 
 def hunt():
-    enemyHunted 
+    enemyHunted = random.randint(1, 4)
 
     if enemyHunted == 1:
 
