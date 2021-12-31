@@ -16,6 +16,21 @@ xpBonus = playerStats['bank'] * level
 bank = playerStats['bank']
 purse = playerStats['level']
 
+#boss class
+
+class bossClass:
+    def __init__(self, name, attack, defence, health, maxHealth):
+        self.name = name
+        self.attack = attack
+        self.defence = defence
+        self.health = health
+        self.maxHealth = maxHealth
+
+#bossClass
+
+boss1 = bossClass('The Sus', 100, 100, 100, 100)
+
+
 
 
 #help list
