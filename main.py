@@ -153,7 +153,7 @@ def hunt():
     if enemyHunted == 1:
         
         enemyHunted = zombie
-        damageTaken = random.randint(enemyHunted.attack, 25)
+        damageTaken = random.randint(enemyHunted.attack, 5 * enemyHunted.attack)
         damage = random.randint(playerStats['attack'], 25)
         enemyHunted.health -= damage 
         playerStats['health'] -= damageTaken
@@ -177,7 +177,7 @@ def hunt():
         
     if enemyHunted == 2:
         enemyHunted = skeleton
-        damageTaken = random.randint(enemyHunted.attack, 25)
+        damageTaken = random.randint(enemyHunted.attack, 5 * enemyHunted.attack)
         damage = random.randint(playerStats['attack'], 25)
         enemyHunted.health -= damage 
         playerStats['health'] -= damageTaken
@@ -200,7 +200,7 @@ def hunt():
    
     if enemyHunted == 3:
         enemyHunted = spider
-        damageTaken = random.randint(enemyHunted.attack, 25)
+        damageTaken = random.randint(enemyHunted.attack, 5 * enemyHunted.attack)
         damage = random.randint(playerStats['attack'], 25)
         enemyHunted.health -= damage 
         playerStats['health'] -= damageTaken
