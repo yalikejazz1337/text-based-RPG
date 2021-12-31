@@ -1,5 +1,6 @@
 #import required libraries
 from numpy import random
+import numpy as np
 
 #define variables
 playerStats = {
@@ -11,6 +12,32 @@ playerStats = {
     'exp': 100,
     'bank': 1
 }
+
+
+class moveClass:
+    def __init__(self, name, power, accuracy):
+        self.name = name
+        self.power = power
+        self.accuracy = accuracy
+
+    def showStats(self, name, power, accuracy):
+        print("a cup of joe")
+
+
+#move
+
+stab = moveClass('stab', 10, 90)
+fireball = moveClass('fireball', 20, 70)
+bow = moveClass("bow", 30, 85)
+glock = moveClass('glock-69', 69, 70)
+
+moves = [stab, fireball, bow, glock]
+
+moveMessage = ""
+
+for i in range(len(moves)):
+    moveMessage += (moves[i].name).upper() + " Power: " + str(
+        moves[i].power) + " Accuracy: " + str(moves[i].accuracy) + "\n"
 
 commands = ['help', 'hunt', 'shop', 'heal', 'boss', 'stats', 'quit', 'bank']
 bankCommands = ['deposit', 'withdraw']
@@ -25,6 +52,8 @@ level = playerStats['level']
 xpBonus = playerStats['bank'] * level
 bank = playerStats['bank']
 purse = playerStats['level']
+inBattle = False
+
 
 #boss class
 
@@ -41,6 +70,35 @@ class bossClass:
 #bossClass
 
 boss1 = bossClass('The Sus', 100, 100, 100, 100)
+
+#enemy class
+
+
+class enemyClass:
+    def __init__(self, name, attack, defence, health, maxHealth):
+        self.name = name
+        self.attack = attack
+        self.defence = defence
+        self.health = health
+        self.maxHealth = maxHealth
+
+    def glock(self, attack):
+        playerStats['health'] -= (random.randint(
+            self.attack, 5 * self.attack)) * (playerStats['defence']) / 2000
+
+    def resetEnemy(self, health, maxHealth):
+        self.health = self.maxHealth
+
+
+#enemies
+
+zombie = enemyClass('Zombie', 10, 10, 10, 100)
+skeleton = enemyClass('Skeleton', 15, 5, 10, 90)
+spider = enemyClass('Spider', 10, 15, 10, 95)
+
+enemies = [zombie, skeleton, spider]
+#enemies for later levels/areas
+enemies2 = []
 
 #help list
 helpCommand = """
@@ -166,83 +224,43 @@ def killSpider():
 
 
 def hunt():
-    enemyHunted = random.randint(1, 4)
+    global inBattle
+    if inBattle == True:
+        print("""BReH MiMENT YrO'uE IN A BATtlE LmAo""")
+    else:
+        print("am fight")
+        inBattle = True
+        randomEnemy = random.randint(0, 3)
+        target = enemies[randomEnemy]
 
-    if enemyHunted == 1:
-
-        enemyHunted = zombie
-        damageTaken = random.randint(enemyHunted.attack, 5 * enemyHunted.attack)
-        damageTaken = damageTaken / playerStats['defence']
-        damage = random.randint(playerStats['attack'], 25)
-        enemyHunted.health -= damage
-        playerStats['health'] -= damageTaken
-        coinsEarned = random.randint(25, 100)
-        xpEarned = random.randint(100 * xpBonus, 500 * xpBonus)
-
-        if playerStats['health'] <= 0:
-            die()
-
-        elif enemyHunted.health <= 0:
-            playerStats['coins'] += coinsEarned
-            playerStats['exp'] += xpEarned
+        while inBattle == True:
             print(
-                f"""You killed a zombie and earned {coinsEarned} coins. You also earned {xpEarned} XP."""
+                f"""YOUR TURN EPIC GA YMER \n YOUR TARGET IS A {target.name}! YOUR MOVES ARE:"""
             )
-            killZombie()
+            print(moveMessage)
+            moveChoice = input("CHOOSE A MOVE: ")
+            print(moveChoice)
+            for i in range(0, len(moves)-1):
+                if moveChoice.lower == moves[i].name:
+                    randomAccuracy = random.randint(1, 100)
+                    if randomAccuracy >= moves[i].accuracy:
+                        #enemy attacks
+                        print("lol you missed what a noob")
+                    else:
+                        damageDealt = random.randint(
+                            moves[i].power, moves[i].power *
+                            playerStats['attack']) / target.defence
+                        target.health -= moves[i].power
+                        #enemy attacks you    
+                        print(
+                            f"""YOU {moves[i].name}ed THE {target}! YOU DEAL {damageDealt} DAMAGE! THE {target} NOW HAS {target.health} HP / {target.maxHealth} HP!"""
+                        )
+                else:
+                  #if the move isn't a move, keep repeating the if statement until its an actual move
+                  print("select an actual move bozo")
 
-        else:
-            print("""You weren't able to defeat the zombie and ran away.""")
+        #battle begins
 
-    if enemyHunted == 2:
-        enemyHunted = skeleton
-        damageTaken = random.randint(enemyHunted.attack,
-                                     5 * enemyHunted.attack)
-        damage = random.randint(playerStats['attack'], 25)
-        enemyHunted.health -= damage
-        playerStats['health'] -= damageTaken
-        coinsEarned = random.randint(25, 100)
-        xpEarned = random.randint(100, 500)
-
-        if playerStats['health'] <= 0:
-            die()
-
-        elif enemyHunted.health <= 0:
-            playerStats['coins'] += coinsEarned
-            playerStats['exp'] += xpEarned
-            print(
-                f"""You killed a skeleton and earned {coinsEarned} coins. You also earned {xpEarned} XP"""
-            )
-            killSkeleton()
-
-        else:
-            print("""You weren't able to defeat the skeleton and ran away.""")
-
-    if enemyHunted == 3:
-        enemyHunted = spider
-        damageTaken = random.randint(enemyHunted.attack,
-                                     5 * enemyHunted.attack)
-        damage = random.randint(playerStats['attack'], 25)
-        enemyHunted.health -= damage
-        playerStats['health'] -= damageTaken
-        coinsEarned = random.randint(25, 100)
-        xpEarned = random.randint(100, 500)
-
-        if playerStats['health'] <= 0:
-            die()
-
-        elif enemyHunted.health <= 0:
-            playerStats['coins'] += coinsEarned
-            playerStats['exp'] += xpEarned
-            print(
-                f"""You killed a spider and earned {coinsEarned} coins. You also earned {xpEarned} XP"""
-            )
-            killSpider()
-
-        else:
-            print("""You weren't able to defeat the spider and ran away.""")
-
-
-#death
 
 
 def die():
@@ -252,7 +270,6 @@ def die():
     playerStats['health'] = 100 * playerStats['level']
     playerStats['exp'] -= xpLost
     playerStats['coins'] -= coinsLost
-
 
 #stats
 
@@ -280,28 +297,6 @@ def stats():
           -----------------------------------------
           """)
 
-
-#enemy class
-
-
-class enemyClass:
-    def __init__(self, name, attack, defence, health, maxHealth):
-      self.name = name
-      self.attack = attack
-      self.defence = defence
-      self.health = health
-      self.maxHealth = maxHealth
-    
-    def killed():
-      self.health = self.maxHealth
-      
-
-
-#enemies
-
-zombie = enemyClass('Zombie', 10, 10, 10, 10)
-skeleton = enemyClass('Skeleton', 15, 5, 10, 10)
-spider = enemyClass('Spider', 10, 15, 10, 10)
 
 #game loop
 

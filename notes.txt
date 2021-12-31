@@ -1,2 +1,18 @@
 multi-turn things
--
+-multiple turns to kill enemy
+
+to prevent fighting multiple enemies 
+
+"InBattle" variable
+
+
+each turn..
+
+- different attaccks
+-different powers  (scaled based on attack) and accuracy 
+different level attack 
+
+player always goes first
+turns- after player chooses and attacks, the enemy  attacks and damages the player based on the player's defence and the enemy's attack
+
+
