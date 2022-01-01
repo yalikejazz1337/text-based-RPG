@@ -33,8 +33,10 @@ moves = [stab, fireball, bow, glock]
 moveMessage = ""
 
 for i in range(len(moves)):
-    moveMessage += (moves[i].name).upper() + " Power: " + str(
+    moveMessage += str(i+1) + ": " + (moves[i].name).upper() + " Power: " + str(
         moves[i].power) + " Accuracy: " + str(moves[i].accuracy) + "\n"
+
+moveMessage += "Use the number next to the move name to use that move!"
 
 commands = ['help', 'hunt', 'shop', 'heal', 'boss', 'stats', 'quit', 'bank']
 bankCommands = ['deposit', 'withdraw']
@@ -235,6 +237,13 @@ def hunt():
           if randomAccuracy >= moves[i].accuracy:
             #miss
             print('l bozo you missed')
+            enemyDamage = round((random.randrange(10, 25, 1)/10) * target.attack * (1 - playerStats['defence']/2000), 2)
+            playerStats['health'] -= enemyDamage
+            if playerStats['health'] <= 0:
+              die()
+              return "l bozo"
+            else:
+              print(f"the {target.name} did {enemyDamage} damage to you- ouch")
           else:
             #attack with that move's accuracy and power
             #after attack enemy, enemy attacks you and then it repeats
