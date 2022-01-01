@@ -1,6 +1,6 @@
 #import required libraries
-from numpy import random
-import numpy as np
+import random
+import math
 
 #define variables
 playerStats = {
@@ -19,9 +19,6 @@ class moveClass:
         self.name = name
         self.power = power
         self.accuracy = accuracy
-
-    def showStats(self, name, power, accuracy):
-        print("a cup of joe")
 
 
 #move
@@ -54,7 +51,6 @@ bank = playerStats['bank']
 purse = playerStats['level']
 inBattle = False
 
-
 #boss class
 
 
@@ -82,9 +78,7 @@ class enemyClass:
         self.health = health
         self.maxHealth = maxHealth
 
-    def glock(self, attack):
-        playerStats['health'] -= (random.randint(
-            self.attack, 5 * self.attack)) * (playerStats['defence']) / 2000
+
 
     def resetEnemy(self, health, maxHealth):
         self.health = self.maxHealth
@@ -92,9 +86,9 @@ class enemyClass:
 
 #enemies
 
-zombie = enemyClass('Zombie', 10, 10, 10, 100)
-skeleton = enemyClass('Skeleton', 15, 5, 10, 90)
-spider = enemyClass('Spider', 10, 15, 10, 95)
+zombie = enemyClass('Zombie', 10, 10, 100, 100)
+skeleton = enemyClass('Skeleton', 15, 5, 90, 90)
+spider = enemyClass('Spider', 10, 15, 95, 95)
 
 enemies = [zombie, skeleton, spider]
 #enemies for later levels/areas
@@ -224,43 +218,49 @@ def killSpider():
 
 
 def hunt():
-    global inBattle
-    if inBattle == True:
-        print("""BReH MiMENT YrO'uE IN A BATtlE LmAo""")
-    else:
-        print("am fight")
-        inBattle = True
-        randomEnemy = random.randint(0, 3)
-        target = enemies[randomEnemy]
+  global inBattle
+  if inBattle == True:
+    print("you're in a battle bozo- even if i'd let you 2v1 you'd automatically die")
+  elif inBattle == False:
+    inBattle = True
+    enemy = random.randrange(0,3,1)
+    target = enemies[enemy]
+    print(f"You are battling a {target.name}!")
+    while inBattle == True:
+      print("Your moves are: \n" + moveMessage)
+      moveChoice = input(f"""Choose a move: """)
+      for i in range(0, len(moves)):
+        if(int(moveChoice) == i+1):
+          randomAccuracy = random.randrange(0, 100, 1)
+          if randomAccuracy >= moves[i].accuracy:
+            #miss
+            print('l bozo you missed')
+          else:
+            #attack with that move's accuracy and power
+            #after attack enemy, enemy attacks you and then it repeats
+            damageDealt = round((random.randrange(10, 60, 1)/10) * (moves[i].power * playerStats['attack']/10) * (1-target.defence/2000), )
+            target.health -= damageDealt
+            print(f"You attacked the {target.name} and did {damageDealt} damage to the enemy!")
+            
+            enemyDamage = round((random.randrange(10, 25, 1)/10) * target.attack * (1 - playerStats['defence']/2000), 2)
 
-        while inBattle == True:
-            print(
-                f"""YOUR TURN EPIC GA YMER \n YOUR TARGET IS A {target.name}! YOUR MOVES ARE:"""
-            )
-            print(moveMessage)
-            moveChoice = input("CHOOSE A MOVE: ")
-            print(moveChoice)
-            for i in range(0, len(moves)-1):
-                if moveChoice.lower == moves[i].name:
-                    randomAccuracy = random.randint(1, 100)
-                    if randomAccuracy >= moves[i].accuracy:
-                        #enemy attacks
-                        print("lol you missed what a noob")
-                    else:
-                        damageDealt = random.randint(
-                            moves[i].power, moves[i].power *
-                            playerStats['attack']) / target.defence
-                        target.health -= moves[i].power
-                        #enemy attacks you    
-                        print(
-                            f"""YOU {moves[i].name}ed THE {target}! YOU DEAL {damageDealt} DAMAGE! THE {target} NOW HAS {target.health} HP / {target.maxHealth} HP!"""
-                        )
-                else:
-                  #if the move isn't a move, keep repeating the if statement until its an actual move
-                  print("select an actual move bozo")
+            playerStats['health'] -= enemyDamage
+            if playerStats['health'] <= 0:
+              die()
+              return "l bozo"
+            else:
+              print(f"the {target.name} did {enemyDamage} damage to you- ouch")
+      if target.health <= 0:
+        xpEarned = random.randrange(100,500,10)
+        coinsEarned = random.randrange(25,100,1)
 
+        playerStats['coins'] += coinsEarned
+        playerStats['exp'] += xpEarned
+
+        print(f"good job you killed the {target.name} and earned {coinsEarned} coins and {xpEarned} xp")
+        target.health = target.maxHealth
+        inBattle = False
         #battle begins
-
 
 
 def die():
@@ -270,6 +270,7 @@ def die():
     playerStats['health'] = 100 * playerStats['level']
     playerStats['exp'] -= xpLost
     playerStats['coins'] -= coinsLost
+
 
 #stats
 
@@ -287,7 +288,7 @@ def stats():
           -----------------------------------------
                       PLAYER STATISTICS
           -----------------------------------------
-          Health: {health} / {maxHealth}
+          Health: {round(health,2)} / {maxHealth}
           Attack: {attack}
           Defence: {defence}
           Coins in Purse: {coins}
