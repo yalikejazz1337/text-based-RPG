@@ -16,3 +16,7 @@ player always goes first
 turns- after player chooses and attacks, the enemy  attacks and damages the player based on the player's defence and the enemy's attack
 
 
+pov you're pokemon
+
+
+level balancing

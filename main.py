@@ -13,6 +13,11 @@ playerStats = {
     'bank': 1
 }
 
+def hasLetters(string):
+  for i in string:
+    if i.isalpha():
+      return True
+
 
 class moveClass:
     def __init__(self, name, power, accuracy):
@@ -23,10 +28,10 @@ class moveClass:
 
 #move
 
-stab = moveClass('stab', 10, 90)
-fireball = moveClass('fireball', 20, 70)
-bow = moveClass("bow", 30, 85)
-glock = moveClass('glock-69', 69, 70)
+stab = moveClass('stab', 7, 90)
+fireball = moveClass('fireball', 10, 85)
+bow = moveClass("bow", 11, 75)
+glock = moveClass('glock-69', 10, 60)
 
 moves = [stab, fireball, bow, glock]
 
@@ -46,11 +51,11 @@ allCommands = [
     'withdraw'
 ]
 
-maxHealth = playerStats['health'] * playerStats['level']
+maxHealth = playerStats['health']
 level = playerStats['level']
 xpBonus = playerStats['bank'] * level
 bank = playerStats['bank']
-purse = playerStats['level']
+purse = playerStats['coins']
 inBattle = False
 
 #boss class
@@ -157,7 +162,7 @@ def bank():
           --------------------------
           To Withdraw, use withdraw (amount).
           To deposit, use deposit (amount).
-          You can also use -1 which will deposit
+          You can also use 'all' which will deposit
           all coins in purse or withdraw all coins from bank.
           --------------------------
           """)
@@ -230,7 +235,14 @@ def hunt():
     print(f"You are battling a {target.name}!")
     while inBattle == True:
       print("Your moves are: \n" + moveMessage)
-      moveChoice = input(f"""Choose a move: """)
+      moveSelected = False
+      while moveSelected == False:
+        moveChoice = input(f"""Choose a move: """)
+        if hasLetters(moveChoice):
+          print("don't use letters pls thanks")
+          moveSelected = False
+        else:
+          moveSelected = True
       for i in range(0, len(moves)):
         if(int(moveChoice) == i+1):
           randomAccuracy = random.randrange(0, 100, 1)
@@ -259,9 +271,11 @@ def hunt():
               return "l bozo"
             else:
               print(f"the {target.name} did {enemyDamage} damage to you- ouch")
+      if (not (moveChoice.isnumeric() and int(moveChoice) <= len(moves))):
+        print("select an actual move bozo")
       if target.health <= 0:
-        xpEarned = random.randrange(100,500,10)
-        coinsEarned = random.randrange(25,100,1)
+        xpEarned = random.randrange(100,750,10) * xpBonus
+        coinsEarned = random.randrange(100,375,10)
 
         playerStats['coins'] += coinsEarned
         playerStats['exp'] += xpEarned
@@ -269,7 +283,7 @@ def hunt():
         print(f"good job you killed the {target.name} and earned {coinsEarned} coins and {xpEarned} xp")
         target.health = target.maxHealth
         inBattle = False
-        #battle begins
+      
 
 
 def die():
