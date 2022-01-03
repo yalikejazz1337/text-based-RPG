@@ -1,2 +1,10 @@
-this is here as a placeholder when saving is added
-shut
+{
+        "health": 79,
+        "maxHealth": 100,
+        "defence": 10,
+        "attack": 10,
+        "coins": 450,
+        "level": 1,
+        "exp": 410,
+        "bank": 0
+}

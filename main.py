@@ -1,18 +1,16 @@
 #import required libraries
 import random
 import math
-
+import json
 #define variables
-playerStats = {
-    'health': 100,
-    'maxHealth': 100,
-    'defence': 10,
-    'attack': 10,
-    'coins': 100,
-    'level': 1,
-    'exp': 0,
-    'bank': 0
-}
+
+
+with open('save.json', 'r') as openfile:
+            json_object = json.load(openfile)
+
+
+playerStats = json_object
+
 
 
 def allNumeric(string):
@@ -148,19 +146,23 @@ def heal():
     coins = playerStats['coins']
     price = 25
     bank = playerStats['bank']
-    if coins < price and bank > price:
-        print(
-            f"""You only have {coins} in your purse. Withdraw some from your bank to buy this item."""
-        )
-    elif coins < price and bank < price:
-        print(
-            f"""You don't have enough money to buy this. You have {coins}, but you need {price}."""
-        )
+    if playerStats['health'] == playerStats['maxHealth']:
+            print('You have full health bozo')
+            return 'bozo had full health'
     else:
-        if coins >= price:
-            playerStats['health'] = maxHealth
-            print("Restored to full health!")
-            playerStats['coins'] -= price
+        if coins < price and bank > price:
+                print(
+                f"""You only have {coins} in your purse. Withdraw some from your bank to buy this item."""
+                )
+        elif coins < price and bank < price:
+                print(
+                f"""You don't have enough money to buy this. You have {coins}, but you need {price}."""
+                )
+        else:
+                if coins >= price:
+                        playerStats['health'] = maxHealth
+                        print("Restored to full health!")
+                        playerStats['coins'] -= price
 
 
 #banking
@@ -380,6 +382,12 @@ while True:
     if command in commands or bankCommands:
         if command == commands[-2]:
             print('Quitting.....')
+            json_object = json.dumps(playerStats, indent = 8)
+
+            with open("save.json", "w") as outfile:
+                outfile.write(json_object)
+
+
             break
 
         if playerStats['health'] <= 0:
