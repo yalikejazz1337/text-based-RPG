@@ -10,12 +10,14 @@ playerStats = {
     'attack': 10,
     'coins': 100,
     'level': 1,
-    'exp': 100,
-    'bank': 1
+    'exp': 0,
+    'bank': 0
 }
 
 
 def allNumeric(string):
+    if(len(string) == 0):
+      return False
     for i in string:
         if i.isdigit() == False:
           return False
@@ -35,8 +37,9 @@ stab = moveClass('stab', 7, 90)
 fireball = moveClass('fireball', 10, 85)
 bow = moveClass("bow", 11, 75)
 glock = moveClass('glock-69', 10, 60)
+amogus = moveClass('amogus', 8, 69)
 
-moves = [stab, fireball, bow, glock]
+moves = [stab, fireball, bow, glock, amogus]
 
 moveMessage = ""
 
@@ -57,7 +60,7 @@ allCommands = [
 
 maxHealth = playerStats['maxHealth']
 level = playerStats['level']
-xpBonus = playerStats['bank'] * level
+xpBonus = 1 + playerStats['bank']/1000 * level
 bank = playerStats['bank']
 purse = playerStats['coins']
 inBattle = False
@@ -89,7 +92,7 @@ def levelUp():
         playerStats['defence'] += 5
         playerStats['exp'] = 0
         print(
-            'good jov you got a levle nwo dio it agin- wait dio THATS A JOJO REFERENCE'
+            'good job you leveled up'
         )
 
 
@@ -164,7 +167,7 @@ def heal():
 def bank():
     coins = playerStats['coins']
     inBank = playerStats['bank']
-
+    xpBonus = 1 + playerStats['bank']/1000 * level
     print(f"""
           --------------------------
                   YOUR BANK
@@ -268,7 +271,7 @@ def hunt():
                         enemyDamage = round(
                             (random.randrange(10, 25, 1) / 10) *
                             target.attack *
-                            (1 - playerStats['defence'] / 2000), 2)
+                            (1 - playerStats['defence'] / 2000))
                         playerStats['health'] -= enemyDamage
                         if playerStats['health'] <= 0:
                             die()
@@ -276,7 +279,7 @@ def hunt():
                             return "l bozo"
                         else:
                             print(
-                                f"the {target.name} did {enemyDamage} damage to you- ouch"
+                                f"the {target.name} did {enemyDamage} damage to you- ouch you now have {playerStats['health']} hp / {playerStats['maxHealth']} hp"
                             )
                     else:
                         #attack with that move's accuracy and power
@@ -284,31 +287,32 @@ def hunt():
                         damageDealt = round(
                             (random.randrange(10, 60, 1) / 10) *
                             (moves[i].power * playerStats['attack'] / 10) *
-                            (1 - target.defence / 2000), )
+                            (1 - target.defence / 2000))
                         target.health -= damageDealt
-                        print(
-                            f"You attacked the {target.name} and did {damageDealt} damage to the enemy!"
-                        )
+                        if(target.health > 0):
+                          print(
+                              f"You attacked the {target.name} and did {damageDealt} damage to the enemy! The {target.name} now has {target.health} hp / {target.maxHealth} hp!"
+                          )
 
-                        enemyDamage = round(
-                            (random.randrange(10, 25, 1) / 10) *
-                            target.attack *
-                            (1 - playerStats['defence'] / 2000), 2)
+                          enemyDamage = round(
+                              (random.randrange(10, 25, 1) / 10) *
+                              target.attack *
+                              (1 - playerStats['defence'] / 2000))
 
-                        playerStats['health'] -= enemyDamage
+                          playerStats['health'] -= enemyDamage
+                          print(
+                                f"the {target.name} did {enemyDamage} damage to you- ouch you now have {playerStats['health']} hp / {playerStats['maxHealth']} hp"
+                            )
                         if playerStats['health'] <= 0:
                             die()
                             inBattle = False
                             return "l bozo"
-                        else:
-                            print(
-                                f"the {target.name} did {enemyDamage} damage to you- ouch"
-                            )
+                            
                 if (not (moveChoice.isnumeric()
                          and int(moveChoice) <= len(moves))):
                     print("select an actual move bozo")
                 if target.health <= 0:
-                    xpEarned = random.randrange(100, 750, 10) * xpBonus
+                    xpEarned = round(random.randrange(100, 750, 10) * xpBonus)
                     coinsEarned = random.randrange(100, 375, 10)
                     playerStats['coins'] += coinsEarned
                     playerStats['exp'] += xpEarned
@@ -323,6 +327,10 @@ def hunt():
 def die():
     xpLost = random.randint(100 * level, 500 * level)
     coinsLost = random.randint(10, 50)
+    if(coinsLost >= playerStats['coins']):
+      coinsLost = playerStats['coins']
+    if(xpLost >= playerStats['exp']):
+      xpLost = playerStats['exp']
     print(f'You died and lost {coinsLost} coins. You also lost {xpLost} XP. ')
     playerStats['health'] = 100 * playerStats['level']
     playerStats['exp'] -= xpLost
@@ -345,13 +353,13 @@ def stats():
           -----------------------------------------
                       PLAYER STATISTICS
           -----------------------------------------
-          Health: {round(health,2)} / {maxHealth}
+          Health: {round(health)} / {maxHealth}
           Attack: {attack}
           Defence: {defence}
           Coins in Purse: {coins}
           Coins in Bank: {bank}
           Level: {level}
-          XP: {xp}
+          XP: {math.floor(xp)} / {math.floor(1000*pow(1.25, level))}
           -----------------------------------------
           """)
 
