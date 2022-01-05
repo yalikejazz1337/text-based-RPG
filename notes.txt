@@ -20,3 +20,7 @@ pov you're pokemon
 
 
 level balancing
+
+shop
+-shows interface
+-trade coin for cool things
