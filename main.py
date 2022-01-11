@@ -10,11 +10,15 @@ with open('save.json', 'r') as openfile:
 with open('save2.json', 'r') as openfile:
     json_object2 = json.load(openfile)
 
+with open('save3.json', 'r') as openfile:
+    moveList = json.load(openfile)
+
 
 
 playerStats = json_object
 
 playerItems = json_object2
+
 
 
 def allNumeric(string):
@@ -27,26 +31,30 @@ def allNumeric(string):
 
 
 class moveClass:
-    def __init__(self, name, power, accuracy, id):
+    def __init__(self, name, power, accuracy, moveId):
         self.name = name
         self.power = power
         self.accuracy = accuracy
-        self.id = id
+        self.moveId = moveId
 
 
 #move
 
-stab = moveClass('stab', 7, 90,1)
-fireball = moveClass('fireball', 10, 85,2)
-bow = moveClass("bow", 11, 75,3)
-glock = moveClass('glock-69', 10, 60,4)
-amogus = moveClass('amogus', 8, 69,5)
-ak_47 = moveClass('AK-47', 15, 50,6)
-crossbow = moveClass('Crossbow', 13, 60,7)
+
+stab = moveClass('stab', 7, 90,0)
+fireball = moveClass('fireball', 10, 85,1)
+bow = moveClass("bow", 11, 75,2)
+glock = moveClass('glock-69', 10, 60,3)
+amogus = moveClass('amogus', 8, 69,4)
+ak_47 = moveClass('AK-47', 15, 50,5)
+crossbow = moveClass('Crossbow', 13, 60,6)
 
 allMoves = [stab, fireball, bow, glock, amogus, ak_47, crossbow]
-moves = [stab, fireball, bow, glock, amogus]
+moves = []
 
+for i in moveList:
+  thing = i
+  moves.append(allMoves[moveList[thing]])
 
 def makeMoveMessage():
   global moveMessage
@@ -68,7 +76,7 @@ shopCommands = ['shop', 'buy', 'sell']
 
 maxHealth = playerStats['maxHealth']
 level = playerStats['level']
-xpBonus = 1 + playerStats['bank'] / 1000 * level
+xpBonus = 1 + playerStats['bank'] / 1000 * level + 1
 bank = playerStats['bank']
 purse = playerStats['coins']
 inBattle = False
@@ -121,11 +129,20 @@ def shop():
         print("don't have enough coins lmao")
     else:
         global moves
-        moves.append(itemList[int(itemChoice)-1].move)
+        selectingReplacement = True
+        while selectingReplacement:
+          joe = input("select the move you want to overwrite \n" + moveMessage + ': ')
+          if(allNumeric(joe)):
+            selectingReplacement = False
+          else:
+            print("type a number idot")
+            selectingReplacement = True
+
+
+        moves[int(joe)-1] = (itemList[int(itemChoice)-1].move)
         playerStats['coins'] -= itemList[int(itemChoice)-1].price
         print(
-            f"""Successfully purchased {itemList[int(itemChoice)-1].name} for {itemList[int(itemChoice)-1].price} coins!"""
-        )
+            f"""Successfully purchased {itemList[int(itemChoice)-1].name} for {itemList[int(itemChoice)-1].price} coins!""")
         makeMoveMessage()
         return 'amogus'
 
@@ -459,7 +476,14 @@ while True:
 
             with open("save2.json", "w") as outfile:
                 outfile.write(json_object2)
+            
+            moveList = {"move1" :moves[0].moveId, "move2" :moves[1].moveId,  "move3" :moves[2].moveId,  "move4" :moves[3].moveId,  "move5" :moves[4].moveId}
 
+
+
+            json_object3 = json.dumps(moveList, indent=5)    
+            with open("save3.json", "w") as outfile:
+                outfile.write(json_object3)
         
             break
 
