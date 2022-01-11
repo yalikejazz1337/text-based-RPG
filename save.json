@@ -1,10 +1,10 @@
 {
-        "health": 79,
-        "maxHealth": 100,
-        "defence": 10,
-        "attack": 10,
-        "coins": 450,
-        "level": 1,
-        "exp": 410,
-        "bank": 0
+        "health": 36,
+        "maxHealth": 125,
+        "defence": 15,
+        "attack": 15,
+        "bank": 375,
+        "coins": 7165,
+        "exp": 0,
+        "level": 2
 }

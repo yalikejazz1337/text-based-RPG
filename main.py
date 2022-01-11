@@ -4,64 +4,148 @@ import math
 import json
 #define variables
 
-
 with open('save.json', 'r') as openfile:
-            json_object = json.load(openfile)
+    json_object = json.load(openfile)
+
+with open('save2.json', 'r') as openfile:
+    json_object2 = json.load(openfile)
+
+with open('save3.json', 'r') as openfile:
+    moveList = json.load(openfile)
+
 
 
 playerStats = json_object
 
+playerItems = json_object2
+
 
 
 def allNumeric(string):
-    if(len(string) == 0):
-      return False
+    if (len(string) == 0):
+        return False
     for i in string:
         if i.isdigit() == False:
-          return False
+            return False
     return True
 
 
 class moveClass:
-    def __init__(self, name, power, accuracy):
+    def __init__(self, name, power, accuracy, moveId):
         self.name = name
         self.power = power
         self.accuracy = accuracy
+        self.moveId = moveId
 
 
 #move
 
-stab = moveClass('stab', 7, 90)
-fireball = moveClass('fireball', 10, 85)
-bow = moveClass("bow", 11, 75)
-glock = moveClass('glock-69', 10, 60)
-amogus = moveClass('amogus', 8, 69)
 
-moves = [stab, fireball, bow, glock, amogus]
+stab = moveClass('stab', 7, 90,0)
+fireball = moveClass('fireball', 10, 85,1)
+bow = moveClass("bow", 11, 75,2)
+glock = moveClass('glock-69', 10, 60,3)
+amogus = moveClass('amogus', 8, 69,4)
+ak_47 = moveClass('AK-47', 15, 50,5)
+crossbow = moveClass('Crossbow', 13, 60,6)
 
-moveMessage = ""
+allMoves = [stab, fireball, bow, glock, amogus, ak_47, crossbow]
+moves = []
 
-for i in range(len(moves)):
-    moveMessage += str(i + 1) + ": " + (
-        moves[i].name).upper() + " Power: " + str(
-            moves[i].power) + " Accuracy: " + str(moves[i].accuracy) + "\n"
+for i in moveList:
+  thing = i
+  moves.append(allMoves[moveList[thing]])
 
-moveMessage += "Use the number next to the move name to use that move!"
+def makeMoveMessage():
+  global moveMessage
+  moveMessage = ""
+  for i in range(len(moves)):
+    moveMessage += str(i + 1) + ": " + (moves[i].name).upper() + " Power: " + str(moves[i].power) + " Accuracy: " + str(moves[i].accuracy) + "\n"
+  moveMessage += "Use the number next to the move name to use that move!"
+makeMoveMessage()
 
 commands = ['help', 'hunt', 'shop', 'heal', 'boss', 'stats', 'quit', 'bank']
 bankCommands = ['deposit', 'withdraw']
 
 allCommands = [
     'help', 'hunt', 'shop', 'heal', 'boss', 'stats', 'quit', 'bank', 'deposit',
-    'withdraw'
+    'withdraw', 'shop', 'buy', 'sell'
 ]
+
+shopCommands = ['shop', 'buy', 'sell']
 
 maxHealth = playerStats['maxHealth']
 level = playerStats['level']
-xpBonus = 1 + playerStats['bank']/1000 * level
+xpBonus = 1 + playerStats['bank'] / 1000 * level + 1
 bank = playerStats['bank']
 purse = playerStats['coins']
 inBattle = False
+
+#shop
+
+
+class itemClass:
+    def __init__(self, name, price, move):
+        self.name = name
+        self.price = price
+        self.move = move
+
+
+AK_47 = itemClass('AK-47', 700, ak_47)
+Crossbow = itemClass('Crossbow', 600, crossbow)
+
+itemList = [AK_47, Crossbow]
+
+shopMessage = ''
+
+
+def shop():
+    global shopMessage
+
+    for i in range(0, len(itemList)):
+        shopMessage += f"""
+                                -------{itemList[i].name}------\n
+                                PRICE: {itemList[i].price}\n
+                                POWER: {itemList[i].move.power}\n
+                                ACCURACY: {itemList[i].move.accuracy} \n
+    """
+    print(shopMessage)
+
+    selectingItem = True
+
+    while selectingItem == True:
+        selectingItem = True
+        itemChoice = input("select an item to buy: ")
+        if itemChoice == 'exit':
+            return 'bozo left shop'
+        if (allNumeric(itemChoice)):
+            if (int(itemChoice) >= 0 and int(itemChoice) <= len(itemList)):
+                
+                selectingItem = False
+                #valid thing
+        if(selectingItem == True):
+          print("select an actual item bozo")
+    if playerStats['coins'] < itemList[int(itemChoice)-1].price:
+        print("don't have enough coins lmao")
+    else:
+        global moves
+        selectingReplacement = True
+        while selectingReplacement:
+          joe = input("select the move you want to overwrite \n" + moveMessage + ': ')
+          if(allNumeric(joe)):
+            selectingReplacement = False
+          else:
+            print("type a number idot")
+            selectingReplacement = True
+
+
+        moves[int(joe)-1] = (itemList[int(itemChoice)-1].move)
+        playerStats['coins'] -= itemList[int(itemChoice)-1].price
+        print(
+            f"""Successfully purchased {itemList[int(itemChoice)-1].name} for {itemList[int(itemChoice)-1].price} coins!""")
+        makeMoveMessage()
+        return 'amogus'
+
 
 #boss class
 
@@ -89,9 +173,7 @@ def levelUp():
         playerStats['attack'] += 5
         playerStats['defence'] += 5
         playerStats['exp'] = 0
-        print(
-            'good job you leveled up'
-        )
+        print('good job you leveled up')
 
 
 class enemyClass:
@@ -136,7 +218,7 @@ helpCommand = """
                Bank: Displays how many coins you have in your purse and
                how many coins you have in your bank and other help with banks.
                -------------------------
-               Exit: Exits the game.
+               quit: Quits the game.
                """
 
 #healing
@@ -147,29 +229,29 @@ def heal():
     price = 25
     bank = playerStats['bank']
     if playerStats['health'] == playerStats['maxHealth']:
-            print('You have full health bozo')
-            return 'bozo had full health'
+        print('You have full health bozo')
+        return 'bozo had full health'
     else:
         if coins < price and bank > price:
-                print(
+            print(
                 f"""You only have {coins} in your purse. Withdraw some from your bank to buy this item."""
-                )
+            )
         elif coins < price and bank < price:
-                print(
+            print(
                 f"""You don't have enough money to buy this. You have {coins}, but you need {price}."""
-                )
+            )
         else:
-                if coins >= price:
-                        playerStats['health'] = maxHealth
-                        print("Restored to full health!")
-                        playerStats['coins'] -= price
+            if coins >= price:
+                playerStats['health'] = maxHealth
+                print("Restored to full health!")
+                playerStats['coins'] -= price
 
 
 #banking
 def bank():
     coins = playerStats['coins']
     inBank = playerStats['bank']
-    xpBonus = 1 + playerStats['bank']/1000 * level
+    xpBonus = 1 + playerStats['bank'] / 1000 * level
     print(f"""
           --------------------------
                   YOUR BANK
@@ -245,6 +327,7 @@ def killSpider():
 
 def hunt():
     global inBattle
+    global moveMessage
     if inBattle == True:
         print(
             "you're in a battle bozo- even if i'd let you 2v1 you'd automatically die"
@@ -291,25 +374,25 @@ def hunt():
                             (moves[i].power * playerStats['attack'] / 10) *
                             (1 - target.defence / 2000))
                         target.health -= damageDealt
-                        if(target.health > 0):
-                          print(
-                              f"You attacked the {target.name} and did {damageDealt} damage to the enemy! The {target.name} now has {target.health} hp / {target.maxHealth} hp!"
-                          )
+                        if (target.health > 0):
+                            print(
+                                f"You attacked the {target.name} and did {damageDealt} damage to the enemy! The {target.name} now has {target.health} hp / {target.maxHealth} hp!"
+                            )
 
-                          enemyDamage = round(
-                              (random.randrange(10, 25, 1) / 10) *
-                              target.attack *
-                              (1 - playerStats['defence'] / 2000))
+                            enemyDamage = round(
+                                (random.randrange(10, 25, 1) / 10) *
+                                target.attack *
+                                (1 - playerStats['defence'] / 2000))
 
-                          playerStats['health'] -= enemyDamage
-                          print(
+                            playerStats['health'] -= enemyDamage
+                            print(
                                 f"the {target.name} did {enemyDamage} damage to you- ouch you now have {playerStats['health']} hp / {playerStats['maxHealth']} hp"
                             )
                         if playerStats['health'] <= 0:
                             die()
                             inBattle = False
                             return "l bozo"
-                            
+
                 if (not (moveChoice.isnumeric()
                          and int(moveChoice) <= len(moves))):
                     print("select an actual move bozo")
@@ -329,10 +412,10 @@ def hunt():
 def die():
     xpLost = random.randint(100 * level, 500 * level)
     coinsLost = random.randint(10, 50)
-    if(coinsLost >= playerStats['coins']):
-      coinsLost = playerStats['coins']
-    if(xpLost >= playerStats['exp']):
-      xpLost = playerStats['exp']
+    if (coinsLost >= playerStats['coins']):
+        coinsLost = playerStats['coins']
+    if (xpLost >= playerStats['exp']):
+        xpLost = playerStats['exp']
     print(f'You died and lost {coinsLost} coins. You also lost {xpLost} XP. ')
     playerStats['health'] = 100 * playerStats['level']
     playerStats['exp'] -= xpLost
@@ -362,6 +445,8 @@ def stats():
           Coins in Bank: {bank}
           Level: {level}
           XP: {math.floor(xp)} / {math.floor(1000*pow(1.25, level))}
+          Armor: {playerItems['armor']}
+          Sword: {playerItems['sword']}
           -----------------------------------------
           """)
 
@@ -382,13 +467,26 @@ while True:
     if command in commands or bankCommands:
         if command == commands[-2]:
             print('Quitting.....')
-            json_object = json.dumps(playerStats, indent = 8)
+            json_object = json.dumps(playerStats, indent=8)
 
             with open("save.json", "w") as outfile:
                 outfile.write(json_object)
 
+            json_object2 = json.dumps(playerItems, indent=2)
 
+            with open("save2.json", "w") as outfile:
+                outfile.write(json_object2)
+            
+            moveList = {"move1" :moves[0].moveId, "move2" :moves[1].moveId,  "move3" :moves[2].moveId,  "move4" :moves[3].moveId,  "move5" :moves[4].moveId}
+
+
+
+            json_object3 = json.dumps(moveList, indent=5)    
+            with open("save3.json", "w") as outfile:
+                outfile.write(json_object3)
+        
             break
+
 
         if playerStats['health'] <= 0:
             die()
@@ -413,3 +511,6 @@ while True:
 
         if command == bankCommands[1]:
             withdraw()
+
+        if command == shopCommands[0]:
+            shop()
