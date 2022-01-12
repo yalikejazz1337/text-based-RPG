@@ -66,6 +66,9 @@ makeMoveMessage()
 
 commands = ['help', 'hunt', 'shop', 'heal', 'boss', 'stats', 'quit', 'bank']
 bankCommands = ['deposit', 'withdraw']
+#The sus is a filler boss because yes. Then battle leviathan thingy and if win == treu then captain is ded and yeah. Battle ded captain becuz he mad he ded. Win
+#then bsatttle impostoser becasuxe he sez he;s the captain back 2 liyf. Win. 
+
 
 allCommands = [
     'help', 'hunt', 'shop', 'heal', 'boss', 'stats', 'quit', 'bank', 'deposit',
