@@ -15,10 +15,12 @@ with open('save3.json', 'r') as openfile:
 
 
 
+
 playerStats = json_object
 
 playerItems = json_object2
 
+bossBattled = False 
 
 
 def allNumeric(string):
@@ -75,8 +77,7 @@ allCommands = [
 shopCommands = ['shop', 'buy', 'sell']
 
 maxHealth = playerStats['maxHealth']
-level = playerStats['level']
-xpBonus = 1 + playerStats['bank'] / 1000 * level + 1
+xpBonus = 1 + playerStats['bank'] / 1000 * playerStats['level'] + 1
 bank = playerStats['bank']
 purse = playerStats['coins']
 inBattle = False
@@ -151,38 +152,51 @@ def shop():
 
 
 class bossClass:
-    def __init__(self, name, attack, defence, health, maxHealth):
+    def __init__(self, name, attack, defence, health, maxHealth, xpYield):
         self.name = name
         self.attack = attack
         self.defence = defence
         self.health = health
         self.maxHealth = maxHealth
+        self.xpYield = xpYield
+        self.type = "boss"
 
 
 #bossClass
 
-boss1 = bossClass('The Sus', 100, 100, 100, 100)
+boss1 = bossClass('Sus', 10, 10, 250, 250, 1000)
+boss2 = bossClass('Leviathon', 15, 30, 375, 375, 2000)
+boss3 = bossClass('Crew Captian', 17, 20, 300, 300, 4500)
+boss4 = bossClass('Impostor', 22, 10, 500, 500, 7500)
+
+
+bosses = [boss1, boss2, boss3, boss4]
+
+
 
 
 def levelUp():
     xp = playerStats['exp']
-    xpRequire = 1000 * (pow(1.25, level))
+    xpRequire = 1000 * (pow(1.25, playerStats['level']))
     if xp >= xpRequire:
         playerStats['maxHealth'] += 25
         playerStats['level'] += 1
         playerStats['attack'] += 5
         playerStats['defence'] += 5
         playerStats['exp'] = 0
-        print('good job you leveled up')
+        playerStats['bossBattled'] = 0
+        
 
 
 class enemyClass:
-    def __init__(self, name, attack, defence, health, maxHealth):
+    def __init__(self, name, attack, defence, health, maxHealth, xpYield):
         self.name = name
         self.attack = attack
         self.defence = defence
         self.health = health
         self.maxHealth = maxHealth
+        self.type = "enemy"
+        self.xpYield = xpYield
 
     def resetEnemy(self, health, maxHealth):
         self.health = self.maxHealth
@@ -190,9 +204,9 @@ class enemyClass:
 
 #enemies
 
-zombie = enemyClass('Zombie', 10, 10, 100, 100)
-skeleton = enemyClass('Skeleton', 15, 5, 90, 90)
-spider = enemyClass('Spider', 10, 15, 95, 95)
+zombie = enemyClass('Zombie', 10, 10, 100, 100, 250)
+skeleton = enemyClass('Skeleton', 15, 5, 90, 90, 250)
+spider = enemyClass('Spider', 10, 15, 95, 95, 250)
 
 enemies = [zombie, skeleton, spider]
 #enemies for later levels/areas
@@ -251,7 +265,7 @@ def heal():
 def bank():
     coins = playerStats['coins']
     inBank = playerStats['bank']
-    xpBonus = 1 + playerStats['bank'] / 1000 * level
+    xpBonus = 1 + playerStats['bank'] / 1000 * playerStats['level']
     print(f"""
           --------------------------
                   YOUR BANK
@@ -305,27 +319,11 @@ def withdraw():
             playerStats['coins'] += withdrawAmount
             print(f"""Successfully withdrew {withdrawAmount} coins!""")
 
-
-#define kill
-
-
-def killZombie():
-    zombie.health = zombie.maxHealth
-
-
-def killSkeleton():
-    skeleton.health = skeleton.maxHealth
-
-
-def killSpider():
-    spider.health = spider.maxHealth
-
-
 #level system
 #hunt function
 
 
-def hunt():
+def hunt(targetE):
     global inBattle
     global moveMessage
     if inBattle == True:
@@ -334,9 +332,11 @@ def hunt():
         )
     elif inBattle == False:
         inBattle = True
-        enemy = random.randrange(0, 3, 1)
-        target = enemies[enemy]
-        print(f"You are battling a {target.name}!")
+        target = targetE
+        if(target.type == "enemy"):
+          print(f"You are battling a {target.name}!")
+        elif(target.type == "boss"):
+          print(f"You are battling the {target.name}!!")
         while inBattle == True:
             print("Your moves are: \n" + moveMessage)
             moveSelected = False
@@ -389,28 +389,49 @@ def hunt():
                                 f"the {target.name} did {enemyDamage} damage to you- ouch you now have {playerStats['health']} hp / {playerStats['maxHealth']} hp"
                             )
                         if playerStats['health'] <= 0:
+                            target.health = target.maxHealth
                             die()
                             inBattle = False
                             return "l bozo"
 
-                if (not (moveChoice.isnumeric()
-                         and int(moveChoice) <= len(moves))):
+                if (not (moveChoice.isnumeric() and int(moveChoice) <= len(moves))):
                     print("select an actual move bozo")
                 if target.health <= 0:
-                    xpEarned = round(random.randrange(100, 750, 10) * xpBonus)
+                    if(target.type == "enemy"):
+                        target.health = target.maxHealth
+                        
+                        inBattle = False
+                        xpEarned = round(random.randrange(target.xpYield, target.xpYield + 250, 10) * xpBonus)
+                    elif(target.type == "boss"):
+                        xpEarned = round(random.randrange(target.xpYield, target.xpYield + 1000, 10) * xpBonus)
+                        playerStats['currentBoss'] += 1
+                        inBattle = False
                     coinsEarned = random.randrange(100, 375, 10)
                     playerStats['coins'] += coinsEarned
-                    playerStats['exp'] += xpEarned
-                    print(
+                    if(xpEarned < 1000 * pow(1.25,playerStats['level'])):
+                      playerStats['exp'] += xpEarned
+                      print(
                         f"good job you killed the {target.name} and earned {coinsEarned} coins and {xpEarned} xp"
-                    )
-                    target.health = target.maxHealth
-                    levelUp()
-                    inBattle = False
+                      )
+                    else:
+                      levelsGained = 0
+                      while xpEarned > 1000 * pow(1.25,playerStats['level']):
+                        xpEarned -= 1000 * pow(1.25,playerStats['level'])
+                        playerStats['exp'] += 1000 * pow(1.25,playerStats['level'])
+                        levelUp()
+                        levelsGained += 1
+                      xpEarned += 1000 * pow(1.25,playerStats['level'])
+                      print(
+                        f"good job you killed the {target.name} and earned {coinsEarned} and levelled up {str(levelsGained).upper()} time(s)! "
+                      )
+                    
+                    
+                    
+                    break
 
 
 def die():
-    xpLost = random.randint(100 * level, 500 * level)
+    xpLost = random.randint(100 * playerStats['level'], 500 * playerStats['level'])
     coinsLost = random.randint(10, 50)
     if (coinsLost >= playerStats['coins']):
         coinsLost = playerStats['coins']
@@ -421,6 +442,7 @@ def die():
     playerStats['exp'] -= xpLost
     playerStats['coins'] -= coinsLost
 
+    
 
 #stats
 
@@ -438,7 +460,7 @@ def stats():
           -----------------------------------------
                       PLAYER STATISTICS
           -----------------------------------------
-          Health: {round(health)} / {maxHealth}
+          Health: {round(health)} / {playerStats['maxHealth']}
           Attack: {attack}
           Defence: {defence}
           Coins in Purse: {coins}
@@ -495,8 +517,10 @@ while True:
             print(helpCommand)
 
         if command == commands[1]:
-            hunt()
-
+          enemy = random.randrange(0, 3, 1)
+          EnemyTarget = enemies[enemy]
+          hunt(EnemyTarget)
+          
         if command == commands[-3]:
             stats()
 
@@ -514,3 +538,8 @@ while True:
 
         if command == shopCommands[0]:
             shop()
+
+        if command == commands[4]:
+          bossTarget = bosses[playerStats['currentBoss']]
+          hunt(bossTarget)
+            

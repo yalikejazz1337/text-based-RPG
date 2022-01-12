@@ -1,4 +1,5 @@
-    global inBattle
+fafedgads
+ga    global inBattle
     selectedMove = False
     if inBattle == True:
         print("""BReH MiMENT YrO'uE IN A BATtlE LmAo""")
