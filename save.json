@@ -1,10 +1,12 @@
 {
-        "health": 36,
-        "maxHealth": 125,
-        "defence": 15,
-        "attack": 15,
-        "bank": 375,
-        "coins": 7165,
+        "health": 100,
+        "maxHealth": 100,
+        "defence": 10,
+        "attack": 10,
+        "bank": 0,
+        "coins": 100,
         "exp": 0,
-        "level": 2
+        "level": 1,
+        "currentBoss": 0,
+        "bossBattled": 0
 }
