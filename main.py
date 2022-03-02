@@ -86,19 +86,65 @@ purse = playerStats['coins']
 inBattle = False
 
 #shop
+class armorClass:
+  def __init__(self, name, defence, levelReq, price):
+    self.name = name
+    self.defence = defence
+    self.levelReq = levelReq
+    self.price = price
+    self.type = "armour"
+
+class swordClass:
+  def __init__(self, name, att, levelReq, price):
+    self.name = name
+    self.att = att
+    self.levelReq = levelReq
+    self.price = price
+    self.type = "sword"
+
+basicArmor = armorClass("Basic-Armor", 5, 1, 0)
+woodArmor = armorClass('Wooden-Armor', 7.5, 1, 100)
 
 
-class itemClass:
+armours = [basicArmor]
+
+
+basicSword = swordClass("Basic-Sword", 5, 1, 0)
+woodSword = swordClass('Wooden-Sword', 7.5, 1, 100)
+
+swords = [basicSword, woodSword]
+
+
+class moveItemClass:
     def __init__(self, name, price, move):
         self.name = name
         self.price = price
         self.move = move
+        self.type = "move"
+
+class itemClass:
+    def __init__(self, name, price, item):
+        self.name = name
+        self.price = price
+        self.item = item
+        self.type = "item"
+        self.defence = "placeholder"
+        self.att = "placeholder" 
 
 
-AK_47 = itemClass('AK-47', 700, ak_47)
-Crossbow = itemClass('Crossbow', 600, crossbow)
+AK_47 = moveItemClass('AK-47', 700, ak_47)
+Crossbow = moveItemClass('Crossbow', 600, crossbow)
+
+
+
 
 itemList = [AK_47, Crossbow]
+
+for i in range(0, len(armours)):
+  itemList.append(itemClass(armours[i].name, armours[i].price, armours[i]))
+
+for i in range(0, len(swords)):
+  itemList.append(itemClass(swords[i].name, swords[i].price, swords[i]))
 
 shopMessage = ''
 
@@ -107,11 +153,24 @@ def shop():
     global shopMessage
 
     for i in range(0, len(itemList)):
-        shopMessage += f"""
-                                -------{itemList[i].name}------\n
-                                PRICE: {itemList[i].price}\n
-                                POWER: {itemList[i].move.power}\n
-                                ACCURACY: {itemList[i].move.accuracy} \n
+        if(itemList[i].type == "move"):
+          shopMessage += f"""
+                                  -------{itemList[i].name}------\n
+                                  PRICE: {itemList[i].price}\n
+                                  POWER: {itemList[i].move.power}\n
+                                  ACCURACY: {itemList[i].move.accuracy} \n
+    """
+        elif(itemList[i].type == "item" and itemList[i].item.type == "sword"):
+            shopMessage += f"""
+                                  -------{itemList[i].name}------\n
+                                  PRICE: {itemList[i].price}\n
+                                  ATT: {itemList[i].att}\n
+    """
+        elif(itemList[i].type == "item" and itemList[i].item.type == "armour"):
+            shopMessage += f"""
+                                  -------{itemList[i].name}------\n
+                                  PRICE: {itemList[i].price}\n
+                                  DEF: {itemList[i].defence}\n
     """
     print(shopMessage)
 
@@ -132,16 +191,34 @@ def shop():
     if playerStats['coins'] < itemList[int(itemChoice)-1].price:
         print("don't have enough coins lmao")
     else:
-        global moves
-        selectingReplacement = True
-        while selectingReplacement:
-          joe = input("select the move you want to overwrite \n" + moveMessage + ': ')
-          if(allNumeric(joe)):
-            selectingReplacement = False
-          else:
-            print("type a number idot")
-            selectingReplacement = True
-
+        if(itemList[itemChoice].type == "move"):
+          global moves
+          selectingReplacement = True
+          while selectingReplacement:
+            joe = input("select the move you want to overwrite \n" + moveMessage + ': ')
+            if(allNumeric(joe)):
+              selectingReplacement = False
+            else:
+              print("type a number idot")
+              selectingReplacement = True
+        elif(itemList[int(itemChoice)-1].type == "item"):
+            confirming = True
+            while confirming == True:
+              confirm = input('are you sure you want to replace your ' + playerItems[itemList[int(itemChoice)-1].item.type] + " with " + itemList[int(itemChoice)-1] + "(1 if yes and 0 if no)")
+              if(allNumeric(confirm)):
+                if(int(confirm) == 1 or int(confirm) == 0):
+                  confirming = False
+                else:
+                  print("you typed a number that isn't 1 or 0")
+              else:
+                print("only the numbers 0 and 1 please")
+            if(confirm == 0):
+              print("SHOPKEEPER: next time come in and actually buy something")
+              return "angered shopkeeper ending"
+            elif(confirm == 1):
+              playerItems['armour'] = itemList[int(itemChoice)-1]
+              print("Successfully replaced " + playerItems[itemList[int(itemChoice)-1].item.type] + "with " + itemList[int(itemChoice)-1])
+            
 
         moves[int(joe)-1] = (itemList[int(itemChoice)-1].move)
         playerStats['coins'] -= itemList[int(itemChoice)-1].price
